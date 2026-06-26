@@ -1,0 +1,6 @@
+{
+  "name": "Alerte Bénin",
+  "description": "Plateforme d'information et d'opportunités du Bénin en temps réel: actualités, emplois, concours, bourses, bourses d'études et appels à projets.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

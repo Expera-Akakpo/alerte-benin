@@ -1,0 +1,370 @@
+-- =====================================================================
+-- SCHEMA DE BASE DE DONNÉES POUR ALERTE BÉNIN (SUPABASE POSTGRESQL)
+-- Ce fichier contient les tables, index, règles de sécurité RLS et données initiales (seed).
+-- =====================================================================
+
+BEGIN;
+
+-- ---------------------------------------------------------------------
+-- 1. Table: users
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS public.users (
+    id TEXT PRIMARY KEY,
+    email TEXT UNIQUE NOT NULL,
+    password TEXT NOT NULL,
+    fullname TEXT NOT NULL,
+    role TEXT NOT NULL DEFAULT 'user',
+    avatar TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- ---------------------------------------------------------------------
+-- 2. Table: articles
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS public.articles (
+    id TEXT PRIMARY KEY,
+    title TEXT NOT NULL,
+    slug TEXT UNIQUE NOT NULL,
+    excerpt TEXT,
+    content TEXT NOT NULL,
+    image TEXT,
+    category TEXT NOT NULL,
+    author TEXT NOT NULL,
+    status TEXT NOT NULL DEFAULT 'draft',
+    media_type TEXT NOT NULL DEFAULT 'article',
+    media_url TEXT,
+    views INTEGER NOT NULL DEFAULT 0,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    published_at TIMESTAMP WITH TIME ZONE
+);
+
+-- ---------------------------------------------------------------------
+-- 3. Table: opportunities
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS public.opportunities (
+    id TEXT PRIMARY KEY,
+    title TEXT NOT NULL,
+    description TEXT NOT NULL,
+    category TEXT NOT NULL,
+    deadline TEXT NOT NULL, -- Format standard 'YYYY-MM-DD'
+    country TEXT NOT NULL,
+    image TEXT,
+    study_level TEXT,
+    company TEXT,
+    saved_by TEXT[] DEFAULT '{}',
+    views INTEGER NOT NULL DEFAULT 0,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- ---------------------------------------------------------------------
+-- 4. Table: comments
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS public.comments (
+    id TEXT PRIMARY KEY,
+    article_id TEXT NOT NULL REFERENCES public.articles(id) ON DELETE CASCADE,
+    user_id TEXT NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+    user_full_name TEXT NOT NULL,
+    user_avatar TEXT,
+    comment TEXT NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- ---------------------------------------------------------------------
+-- 5. Table: contacts
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS public.contacts (
+    id TEXT PRIMARY KEY,
+    name TEXT NOT NULL,
+    email TEXT NOT NULL,
+    phone TEXT,
+    subject TEXT NOT NULL,
+    message TEXT NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- ---------------------------------------------------------------------
+-- 6. Table: newsletter_subscribers
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS public.newsletter_subscribers (
+    id TEXT PRIMARY KEY,
+    email TEXT UNIQUE NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- ---------------------------------------------------------------------
+-- INDEXATIONS POUR OPTIMISER LES REQUÊTES
+-- ---------------------------------------------------------------------
+CREATE INDEX IF NOT EXISTS idx_articles_slug ON public.articles(slug);
+CREATE INDEX IF NOT EXISTS idx_articles_status ON public.articles(status);
+CREATE INDEX IF NOT EXISTS idx_comments_article_id ON public.comments(article_id);
+
+-- ---------------------------------------------------------------------
+-- INSERTION DES DONNÉES INITIALES (SEED DATA)
+-- ---------------------------------------------------------------------
+
+-- Données pour users
+INSERT INTO public.users (id, email, password, fullname, role, avatar, created_at)
+VALUES 
+('usr_admin', 'admin@alertebenin.bj', 'admin', 'Administrateur Alerte Bénin', 'admin', 'https://api.dicebear.com/7.x/bottts/svg?seed=admin', '2026-06-25T21:49:58.369Z'),
+('usr_test', 'citoyen@alertebenin.bj', 'user', 'Codjo Gbènamè', 'user', 'https://api.dicebear.com/7.x/avataaars/svg?seed=citoyen', '2026-06-25T21:49:58.370Z')
+ON CONFLICT (id) DO UPDATE SET 
+    email = EXCLUDED.email,
+    password = EXCLUDED.password,
+    fullname = EXCLUDED.fullname,
+    role = EXCLUDED.role,
+    avatar = EXCLUDED.avatar,
+    created_at = EXCLUDED.created_at;
+
+-- Données pour articles
+INSERT INTO public.articles (id, title, slug, excerpt, content, image, category, author, status, media_type, media_url, views, created_at, published_at)
+VALUES 
+(
+    'art_1', 
+    'Relance de la filière coton au Bénin : Des chiffres records annoncés pour la campagne', 
+    'relance-filiere-coton-benin-chiffres-records', 
+    'Le ministre de l’Agriculture a présenté le bilan provisoire de la campagne cotonnière, affichant des rendements historiques pour les producteurs locaux.', 
+    E'La filière de l’or blanc béninois se porte au mieux de sa forme. Lors d''un point de presse tenu hier à Cotonou, le ministre de l’Agriculture, de l’Élevage et de la Pêche a dévoilé des chiffres particulièrement encourageants pour la campagne cotonnière en cours. \n\nGrâce à des réformes structurelles rigoureuses, un accès facilité aux intrants de qualité et une météo favorable, la production nationale devrait franchir un nouveau cap historique. \n\n### Des producteurs mieux rémunérés\nL''un des points clés de cette réussite réside dans la revalorisation constante du prix d''achat du coton graine aux producteurs locaux. Cette mesure a permis d''encourager des milliers de familles agricoles à étendre leurs surfaces cultivables au nord et au centre du Bénin.\n\n"Nous voyons le fruit d''un investissement massif de l''État et de ses partenaires. C’est la preuve que notre souveraineté agricole progresse," s''est réjoui un représentant des coopératives agricoles de Banikoara.\n\n### Perspectives industrielles\nL’ambition du Bénin ne s''arrête pas à la production brute. À travers la zone industrielle de Glo-Djigbé (GDIZ), une part croissante de cette production est désormais transformée localement en textiles à forte valeur ajoutée, générant des milliers d''emplois pour la jeunesse béninoise.', 
+    'https://images.unsplash.com/photo-1594901861115-b3a37d61b319?q=80&w=1000', 
+    'Agriculture', 
+    'Équipe Rédactionnelle', 
+    'published', 
+    'article', 
+    NULL, 
+    2450, 
+    '2026-06-24T21:49:58.370Z', 
+    '2026-06-24T21:49:58.370Z'
+),
+(
+    'art_2', 
+    'Cotonou s''arme d''un nouveau centre d''innovation numérique pour la jeunesse', 
+    'cotonou-nouveau-centre-innovation-numerique-jeunesse', 
+    'Situé au cœur de la capitale économique, ce hub technologique ultramoderne offrira des formations gratuites en codage et intelligence artificielle.', 
+    E'Le Bénin poursuit sa transformation numérique à grands pas. Un nouveau jalon vient d''un grand pôle technologique à Cotonou. Ce centre, financé en partenariat public-privé, est destiné à accueillir les étudiants, les freelances et les jeunes porteurs de projets technologiques.\n\nL''espace propose des postes de travail connectés en haut débit, un fablab pour le prototypage matériel, ainsi que des salles de conférence pour des événements axés sur la tech.\n\n### Des formations de pointe gratuites\nLe point fort du centre réside dans ses programmes de certification. Dès le mois prochain, des sessions intensives de formation (bootcamps) débuteront sur des sujets tels que :\n* Le développement Full Stack (React, Node.js, Python)\n* La science des données et l''Intelligence Artificielle\n* Le design d''interface (UI/UX)\n* La cybersécurité\n\n"Le Bénin regorge de talents créatifs. Notre rôle est de leur offrir le cadre technique et l''accompagnement pédagogique pour qu''ils conçoivent les solutions africaines de demain," a déclaré la directrice générale du centre lors de la coupure du ruban.', 
+    'https://images.unsplash.com/photo-1531482615713-2afd69097998?q=80&w=1000', 
+    'Technologie', 
+    'Alerte Tech', 
+    'published', 
+    'article', 
+    NULL, 
+    1891, 
+    '2026-06-23T21:49:58.370Z', 
+    '2026-06-23T21:49:58.370Z'
+),
+(
+    'art_3', 
+    'Podcast : Comprendre les enjeux du crédit agricole pour les jeunes entrepreneurs du Bénin', 
+    'podcast-enjeux-credit-agricole-jeunes-entrepreneurs-benin', 
+    'Dans ce nouvel épisode de nos rapports audio, nous recevons un analyste financier pour décrypter les mécanismes d’accès aux financements ruraux.', 
+    E'Bienvenue sur le podcast d''Alerte Bénin ! Aujourd''hui, nous plongeons dans une thématique vitale pour le développement rural : le crédit agricole. \n\nComment un jeune diplômé peut-il obtenir un prêt pour lancer son exploitation agricole en milieu rural ? Quelles sont les garanties exigées et comment l''État béninois soutient-il ces initiatives à travers le Fonds National de Développement Agricole (FNDA) ?\n\n### Invité spécial\nNous recevons **M. Géraud HOUNDEGNON**, consultant en finance rurale et partenaire des coopératives de production agricole.\n\n*(Écoutez le podcast complet en utilisant le lecteur audio ci-dessus)*\n\n### Points clés abordés dans l''interview :\n1. **La structuration du projet :** Pourquoi 80% des demandes de crédit sont rejetées par manque de business plan réaliste.\n2. **Le rôle du FNDA :** Comment l''État apporte sa garantie pour réduire le taux d''intérêt auprès des banques locales.\n3. **Le suivi technique :** L''importance de se faire accompagner par un conseiller agricole pour rassurer les bailleurs de fonds.', 
+    'https://images.unsplash.com/photo-1478737270239-2f02b77fc618?q=80&w=1000', 
+    'Économie', 
+    'La Rédaction Audio', 
+    'published', 
+    'podcast', 
+    'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3', 
+    1220, 
+    '2026-06-25T09:49:58.370Z', 
+    '2026-06-25T09:49:58.370Z'
+),
+(
+    'art_4', 
+    'Reportage Vidéo : immersion à Sèmè City, la cité béninoise du savoir et de l''innovation', 
+    'reportage-video-immersion-seme-city-cite-savoir-innovation', 
+    'Découvrez à travers nos caméras les projets révolutionnaires nés à Sèmè City, de l''impression 3D médicale au recyclage écologique.', 
+    E'Sèmè City est devenue en quelques années le symbole du dynamisme éducatif et entrepreneurial du Bénin. Dans ce reportage vidéo exclusif, notre équipe s''est rendue sur place pour rencontrer ces chercheurs et inventeurs qui changent le quotidien des populations.\n\n### Des innovations locales pour répondre à des défis globaux\nNous vous présentons trois startups phares :\n* **Benin 3D Medical :** Qui fabrique des prothèses à bas coût adaptées à la morphologie des patients grâce à la modélisation 3D.\n* **EcoPlastic :** Une initiative menée par des étudiantes pour transformer les sachets plastiques usagés en pavés routiers durables.\n* **AgriDrone :** Des drones de surveillance thermique pour optimiser l''arrosage et détecter les parasites dans les grands champs de riz.\n\nRegardez l''intégralité du reportage en vidéo pour découvrir les visages de cette jeunesse pionnière.', 
+    'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?q=80&w=1000', 
+    'Éducation', 
+    'Alerte Vidéo', 
+    'published', 
+    'video', 
+    'https://www.w3schools.com/html/mov_bbb.mp4', 
+    3100, 
+    '2026-06-22T21:49:58.370Z', 
+    '2026-06-22T21:49:58.370Z'
+),
+(
+    'art_5', 
+    'L''agriculture biologique : Une opportunité en or pour la jeunesse agricole béninoise', 
+    'agriculture-biologique-opportunite-or-jeunesse-agricole', 
+    'Face à la demande mondiale croissante, les cultures bio représentent une niche très lucrative pour nos coopératives rurales.', 
+    E'Cultiver sans produits chimiques de synthèse n’est plus seulement une pratique de subsistance ancestrale, c’est aujourd’hui un segment économique hautement rentable. Au Bénin, plusieurs réseaux de jeunes agriculteurs se lancent avec succès dans l''ananas pain de sucre bio, la noix de cajou certifiée et le maraîchage écologique.\n\n### Une valeur ajoutée incontestable\nLes produits certifiés biologiques se vendent en moyenne 30% à 50% plus cher sur les marchés urbains et à l''exportation vers l''Europe et les États-Unis.\n\n"Au début, c’était difficile d''abandonner les pesticides chimiques car cela demande plus de main d''œuvre pour le désherbage. Mais aujourd’hui, notre marge bénéficiaire a doublé et nos terres restent fertiles," témoigne Christian, maraîcher installé à Allada.', 
+    'https://images.unsplash.com/photo-1593113598332-cd59c5ad3f90?q=80&w=1000', 
+    'Agriculture', 
+    'Jean Dossou', 
+    'published', 
+    'article', 
+    NULL, 
+    940, 
+    '2026-06-21T21:49:58.370Z', 
+    '2026-06-21T21:49:58.370Z'
+)
+ON CONFLICT (id) DO UPDATE SET 
+    title = EXCLUDED.title,
+    slug = EXCLUDED.slug,
+    excerpt = EXCLUDED.excerpt,
+    content = EXCLUDED.content,
+    image = EXCLUDED.image,
+    category = EXCLUDED.category,
+    author = EXCLUDED.author,
+    status = EXCLUDED.status,
+    media_type = EXCLUDED.media_type,
+    media_url = EXCLUDED.media_url,
+    views = EXCLUDED.views,
+    created_at = EXCLUDED.created_at,
+    published_at = EXCLUDED.published_at;
+
+-- Données pour opportunities
+INSERT INTO public.opportunities (id, title, description, category, deadline, country, image, study_level, company, saved_by, views, created_at)
+VALUES 
+(
+    'opp_1', 
+    'Recrutement de 25 Conseillers Clientèle Bilingues', 
+    E'MTN Bénin procède actuellement au recrutement de vingt-cinq (25) conseillers clientèle pour renforcer ses centres de service client de Cotonou.\n\n### Missions principales :\n* Accueillir, conseiller et assister les abonnés au quotidien.\n* Traiter les réclamations et proposer des offres adaptées.\n* Assurer la fidélisation des clients en offrant un service de haute qualité.\n\n### Profil recherché :\n* Être titulaire d''un diplôme équivalent à Bac+2 ou Bac+3 en Communication, Marketing, ou Gestion de la relation client.\n* Maîtriser parfaitement le Français (parlé et écrit). La maîtrise d''une langue locale (Fon, Yoruba ou Mina) et de l''Anglais de base est un atout majeur.\n* Excellente aisance relationnelle et capacité d''écoute active.\n\n### Avantages :\n* Contrat de travail attractif avec assurance maladie complète.\n* Cadre de travail moderne et stimulant avec perspectives d''évolution interne.', 
+    'Recrutements', 
+    '2026-08-31', 
+    'Bénin', 
+    'https://images.unsplash.com/photo-1521791136368-1a46827d0adb?q=80&w=1000', 
+    'Bac+2/3', 
+    'MTN Bénin', 
+    '{}', 
+    1450, 
+    '2026-06-25T21:49:58.370Z'
+),
+(
+    'opp_2', 
+    'Bourses d''excellence de la Fondation Alerte pour Master et Doctorat', 
+    E'La Fondation Alerte Bénin, en partenariat avec des universités européennes, lance son programme annuel de bourses d''études d''excellence pour l''année académique 2026/2027.\n\nCes bourses s''adressent aux étudiants béninois brillants désireux de poursuivre leurs études de Master ou de Doctorat dans des domaines d''avenir.\n\n### Domaines d''études prioritaires :\n* Intelligence Artificielle et Technologies Emergentes\n* Agroécologie et Transition Alimentaire\n* Énergies Renouvelables et Génie Climatique\n* Santé Publique et Épidémiologie\n\n### Prise en charge :\nLa bourse est complète et comprend :\n* Les frais de scolarité universitaires pour toute la durée du cursus.\n* Une allocation mensuelle de subsistance de 950 € (environ 620 000 FCFA).\n* Le billet d''avion aller-retour.\n* Une couverture d''assurance médicale internationale.\n\n### Conditions de candidature :\n* Être de nationalité béninoise et âgé de moins de 28 ans au 31 décembre 2026.\n* Être titulaire d''une Licence ou d''un Master avec mention Très Bien ou Bien.', 
+    'Bourses', 
+    '2026-09-15', 
+    'International', 
+    'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=1000', 
+    'Licence / Master', 
+    'Fondation Alerte Bénin', 
+    '{}', 
+    2980, 
+    '2026-06-24T21:49:58.370Z'
+),
+(
+    'opp_3', 
+    'Appel à projets : Concours Sèmè Startups - Édition Verte', 
+    E'Vous êtes une startup béninoise et vous développez des solutions technologiques ou artisanales pour préserver l''environnement ? Postulez à l''édition verte du Concours Sèmè Startups.\n\nCe programme vise à accélérer l''émergence des jeunes entreprises béninoises de l''économie circulaire.\n\n### Dotations de l''appel :\n* **1er Prix :** Financement non remboursable de 10 000 000 FCFA + 1 an d''incubation gratuite à Sèmè City.\n* **2ème Prix :** Financement de 5 000 000 FCFA + 6 mois d''incubation.\n* **3ème Prix :** Financement de 3 000 000 FCFA + coaching personnalisé.\n\n### Thématiques éligibles :\n* Gestion et valorisation des déchets organiques ou plastiques.\n* Agriculture urbaine durable et hors-sol.\n* Systèmes d''irrigation solaires et économes en eau.\n* Applications mobiles de sensibilisation écologique ou de logistique verte.', 
+    'Appels à projets', 
+    '2026-07-31', 
+    'Bénin', 
+    'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?q=80&w=1000', 
+    'Tous niveaux', 
+    'Sèmè City Hub', 
+    '{}', 
+    820, 
+    '2026-06-23T21:49:58.370Z'
+),
+(
+    'opp_4', 
+    'Stage Professionnel : Développeur d''Applications React Native', 
+    E'Une agence de développement informatique basée à Cotonou recherche un(e) stagiaire passionné(e) pour participer au développement et à l''optimisation d''applications mobiles hybrides.\n\nCe stage de pré-embauche d''une durée de six (6) mois offre une opportunité unique d''intégrer une équipe de professionnels expérimentés.\n\n### Responsabilités :\n* Participer à l''intégration des maquettes Figma sous React Native.\n* Connecter les composants de l''interface aux API REST existantes.\n* Effectuer les phases de test sur iOS et Android et corriger les bugs signalés.\n\n### Profil requis :\n* Avoir une première expérience ou des projets personnels réalisés en JavaScript/TypeScript et React.\n* Connaître les bases de Git et de l''intégration continue.\n* Esprit d''équipe, curiosité technique et forte envie d''apprendre.\n\n### Conditions du stage :\n* Indemnité de stage mensuelle de 75 000 FCFA.\n* Prise en charge de la connexion internet et possibilité de télétravail hybride.', 
+    'Stages', 
+    '2026-08-15', 
+    'Bénin', 
+    'https://images.unsplash.com/photo-1581291518655-9523c932dedf?q=80&w=1000', 
+    'Bac+3 minimum', 
+    'DigiTech Benin', 
+    '{}', 
+    610, 
+    '2026-06-22T21:49:58.370Z'
+),
+(
+    'opp_5', 
+    'Concours National d''Entrée au Lycée Militaire de Jeunes Filles de Natitingou', 
+    E'Le Ministère de la Défense Nationale du Bénin informe le public de l''ouverture des registres d''inscription pour le concours d''entrée au Lycée Militaire de Jeunes Filles (Général Mathieu Kérékou) de Natitingou pour l''année scolaire 2026/2027.\n\nCe concours d''excellence vise à recruter les élèves féminines les plus prometteuses du territoire national pour intégrer un cursus d''études rigoureux alliant formation académique d''élite et éducation civique et physique.\n\n### Conditions de participation :\n* Être de nationalité béninoise.\n* Être née entre le 1er janvier 2014 et le 31 décembre 2015.\n* Avoir obtenu le Certificat d''Études Primaires (CEP) de la session de juin 2026 avec une moyenne supérieure ou égale à 14/20.\n* Être indemne de toute affection médicale incompatible avec la discipline militaire.\n\n### Dossier de candidature :\n1. Une demande manuscrite signée des parents ou tuteurs légaux.\n2. Une copie légalisée de l''acte de naissance de la candidate.\n3. Un certificat médical d''aptitude physique délivré par un médecin militaire ou un centre de santé agréé.\n4. Une attestation de réussite au CEP (session 2026).', 
+    'Concours', 
+    '2026-07-20', 
+    'Bénin', 
+    'https://images.unsplash.com/photo-1544717297-fa95b6ee9643?q=80&w=1000', 
+    'Niveau Primaire (CEP)', 
+    'Ministère de la Défense du Bénin', 
+    '{}', 
+    2110, 
+    '2026-06-21T21:49:58.370Z'
+)
+ON CONFLICT (id) DO UPDATE SET 
+    title = EXCLUDED.title,
+    description = EXCLUDED.description,
+    category = EXCLUDED.category,
+    deadline = EXCLUDED.deadline,
+    country = EXCLUDED.country,
+    image = EXCLUDED.image,
+    study_level = EXCLUDED.study_level,
+    company = EXCLUDED.company,
+    saved_by = EXCLUDED.saved_by,
+    views = EXCLUDED.views,
+    created_at = EXCLUDED.created_at;
+
+-- Données pour comments
+INSERT INTO public.comments (id, article_id, user_id, user_full_name, user_avatar, comment, created_at)
+VALUES 
+(
+    'com_1', 
+    'art_1', 
+    'usr_test', 
+    'Codjo Gbènamè', 
+    'https://api.dicebear.com/7.x/avataaars/svg?seed=citoyen', 
+    'C''est une excellente nouvelle pour nos parents agriculteurs ! Nous espérons que l''accompagnement technique va continuer dans l''Alibori.', 
+    '2026-06-25T16:49:58.371Z'
+)
+ON CONFLICT (id) DO UPDATE SET 
+    article_id = EXCLUDED.article_id,
+    user_id = EXCLUDED.user_id,
+    user_full_name = EXCLUDED.user_full_name,
+    user_avatar = EXCLUDED.user_avatar,
+    comment = EXCLUDED.comment,
+    created_at = EXCLUDED.created_at;
+
+-- Activation explicite de la sécurité Row-Level (RLS) pour protéger les données de la base
+ALTER TABLE public.users ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.articles ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.opportunities ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.comments ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.contacts ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.newsletter_subscribers ENABLE ROW LEVEL SECURITY;
+
+-- =====================================================================
+-- RÈGLES DE SÉCURITÉ (POLICIES) POUR ACCÈS ANONYME OU CLIENT DIRECT
+-- Note : Le serveur d'API backend configuré avec SUPABASE_SERVICE_ROLE_KEY
+-- contourne automatiquement les politiques RLS pour exécuter les opérations administratives.
+-- =====================================================================
+
+-- Table: users
+DROP POLICY IF EXISTS "Allow public read users" ON public.users;
+CREATE POLICY "Allow public read users" ON public.users 
+    FOR SELECT USING (true);
+
+-- Table: articles
+DROP POLICY IF EXISTS "Allow public read published articles" ON public.articles;
+CREATE POLICY "Allow public read published articles" ON public.articles 
+    FOR SELECT USING (status = 'published');
+
+-- Table: opportunities
+DROP POLICY IF EXISTS "Allow public read opportunities" ON public.opportunities;
+CREATE POLICY "Allow public read opportunities" ON public.opportunities 
+    FOR SELECT USING (true);
+
+-- Table: comments
+DROP POLICY IF EXISTS "Allow public read comments" ON public.comments;
+CREATE POLICY "Allow public read comments" ON public.comments 
+    FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Allow comment submission" ON public.comments;
+CREATE POLICY "Allow comment submission" ON public.comments 
+    FOR INSERT WITH CHECK (true);
+
+-- Table: contacts
+DROP POLICY IF EXISTS "Allow public contact submission" ON public.contacts;
+CREATE POLICY "Allow public contact submission" ON public.contacts 
+    FOR INSERT WITH CHECK (true);
+
+-- Table: newsletter_subscribers
+DROP POLICY IF EXISTS "Allow public newsletter subscription" ON public.newsletter_subscribers;
+CREATE POLICY "Allow public newsletter subscription" ON public.newsletter_subscribers 
+    FOR INSERT WITH CHECK (true);
+
+COMMIT;
