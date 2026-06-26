@@ -1,0 +1,29 @@
+[
+  {
+    "id": "usr_admin",
+    "email": "admin@alertebenin.bj",
+    "password": "admin",
+    "fullname": "Administrateur Alerte Bénin",
+    "role": "admin",
+    "avatar": "https://api.dicebear.com/7.x/bottts/svg?seed=admin",
+    "createdAt": "2026-06-26T14:47:52.865Z"
+  },
+  {
+    "id": "usr_test",
+    "email": "citoyen@alertebenin.bj",
+    "password": "user",
+    "fullname": "Codjo Gbènamè",
+    "role": "user",
+    "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=citoyen",
+    "createdAt": "2026-06-26T14:47:52.865Z"
+  },
+  {
+    "id": "usr_1782515757025",
+    "email": "test-signup-123@alertebenin.bj",
+    "password": "mypassword",
+    "fullname": "Test User",
+    "role": "user",
+    "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=Test%20User",
+    "createdAt": "2026-06-26T23:15:57.025Z"
+  }
+]

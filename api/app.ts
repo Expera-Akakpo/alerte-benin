@@ -19,11 +19,12 @@ const COMMENTS_FILE = path.join(DATA_DIR, "comments.json");
 
 // Ensure data directory and files exist with seed data
 function ensureDataStore() {
-  if (!fs.existsSync(DATA_DIR)) {
-    fs.mkdirSync(DATA_DIR, { recursive: true });
-  }
+  try {
+    if (!fs.existsSync(DATA_DIR)) {
+      fs.mkdirSync(DATA_DIR, { recursive: true });
+    }
 
-  // Pre-seed Users (Admin and standard test users)
+    // Pre-seed Users (Admin and standard test users)
   if (!fs.existsSync(USERS_FILE)) {
     const seedUsers = [
       {
@@ -338,19 +339,22 @@ Ce concours d'excellence vise à recruter les élèves féminines les plus prome
   if (!fs.existsSync(NEWSLETTER_FILE)) {
     fs.writeFileSync(NEWSLETTER_FILE, JSON.stringify([], null, 2), "utf8");
   }
-  if (!fs.existsSync(COMMENTS_FILE)) {
-    const seedComments = [
-      {
-        id: "com_1",
-        articleId: "art_1",
-        userId: "usr_test",
-        userFullName: "Codjo Gbènamè",
-        userAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=citoyen",
-        comment: "C'est une excellente nouvelle pour nos parents agriculteurs ! Nous espérons que l'accompagnement technique va continuer dans l'Alibori.",
-        createdAt: new Date(Date.now() - 3600000 * 5).toISOString()
-      }
-    ];
-    fs.writeFileSync(COMMENTS_FILE, JSON.stringify(seedComments, null, 2), "utf8");
+    if (!fs.existsSync(COMMENTS_FILE)) {
+      const seedComments = [
+        {
+          id: "com_1",
+          articleId: "art_1",
+          userId: "usr_test",
+          userFullName: "Codjo Gbènamè",
+          userAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=citoyen",
+          comment: "C'est une excellente nouvelle pour nos parents agriculteurs ! Nous espérons que l'accompagnement technique va continuer dans l'Alibori.",
+          createdAt: new Date(Date.now() - 3600000 * 5).toISOString()
+        }
+      ];
+      fs.writeFileSync(COMMENTS_FILE, JSON.stringify(seedComments, null, 2), "utf8");
+    }
+  } catch (err) {
+    console.warn("Silent ignore: Local filesystem is read-only (expected in serverless environments):", err);
   }
 }
 
@@ -397,7 +401,16 @@ const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || SUPAB
 
 // Use the Service Role Key in the backend to bypass Row-Level Security (RLS) safely.
 // This allows enabling strict RLS policies on all database tables to protect direct client connections.
-const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+let supabase: any = null;
+try {
+  if (SUPABASE_URL && SUPABASE_SERVICE_ROLE_KEY) {
+    supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+  } else {
+    console.warn("Supabase credentials missing or invalid.");
+  }
+} catch (e) {
+  console.error("Failed to initialize Supabase client:", e);
+}
 
 function formatError(e: any): string {
   if (!e) return "Unknown error";
