@@ -412,6 +412,55 @@ try {
   console.error("Failed to initialize Supabase client:", e);
 }
 
+// ----------------------------------------
+// SUPABASE KEEP-ALIVE / PING ROUTINE
+// ----------------------------------------
+
+async function pingSupabase(): Promise<{ success: boolean; message: string; timestamp: string }> {
+  const timestamp = new Date().toISOString();
+  if (!supabase) {
+    return { success: false, message: "Supabase client uninitialized", timestamp };
+  }
+  try {
+    const { data, error } = await supabase.from("users").select("id").limit(1);
+    if (error) {
+      console.error("[KeepAlive] Supabase ping failed:", error.message);
+      return { success: false, message: error.message, timestamp };
+    }
+    console.log("[KeepAlive] Supabase ping successful at", timestamp);
+    return { success: true, message: "Supabase project active", timestamp };
+  } catch (err: any) {
+    console.error("[KeepAlive] Supabase ping exception:", err?.message || err);
+    return { success: false, message: err?.message || String(err), timestamp };
+  }
+}
+
+// Background ping every 6 hours if the node server stays alive
+if (typeof setInterval !== "undefined") {
+  setInterval(() => {
+    pingSupabase().catch(() => {});
+  }, 6 * 60 * 60 * 1000); // 6 hours
+}
+
+// Public API endpoint for Cron-Job.org, UptimeRobot, or Vercel Cron
+app.get("/api/ping-supabase", async (req, res) => {
+  const result = await pingSupabase();
+  if (result.success) {
+    res.status(200).json(result);
+  } else {
+    res.status(500).json(result);
+  }
+});
+
+app.get("/api/health", async (req, res) => {
+  const result = await pingSupabase();
+  res.json({
+    status: "ok",
+    supabase: result,
+    environment: process.env.NODE_ENV || "development"
+  });
+});
+
 function formatError(e: any): string {
   if (!e) return "Unknown error";
   if (typeof e === "object") {

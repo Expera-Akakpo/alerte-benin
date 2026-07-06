@@ -62,27 +62,53 @@ export default function Footer({ setActiveTab, darkMode = false, onToggleDarkMod
             <p className="text-xs text-gray-400 leading-relaxed font-medium">
               Média béninois indépendant dédié à la diffusion des opportunités de recrutement, stages, bourses, concours et de l&#39;actualité locale.
             </p>
-            {/* Social Icons */}
-            <div className="flex space-x-3 pt-2">
+            {/* Social Icons & WhatsApp Channel */}
+            <div className="space-y-3 pt-2">
+              <div className="flex space-x-2.5">
+                <a 
+                  href="https://www.facebook.com/profile.php?id=100084176231018" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="h-8 w-8 rounded bg-gray-800 flex items-center justify-center hover:bg-[#1877F2] hover:text-white transition-all border border-gray-700 text-gray-300"
+                  title="Page Facebook Alerte Bénin"
+                >
+                  <Facebook className="h-4 w-4" />
+                </a>
+                <a 
+                  href="https://www.tiktok.com/@alertebenin229?_r=1&_t=ZN-96MNaVUoskg" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="h-8 w-8 rounded bg-gray-800 flex items-center justify-center hover:bg-[#FE2C55] hover:text-white transition-all border border-gray-700 text-gray-300"
+                  title="Compte TikTok Alerte Bénin"
+                >
+                  <svg className="h-4 w-4 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.02 1.59 4.23.95 1.15 2.27 1.94 3.71 2.23v3.91c-1.3-.12-2.58-.57-3.66-1.31-.9-.63-1.63-1.48-2.12-2.47v7.54c0 1.58-.33 3.16-1.14 4.51-.78 1.34-1.93 2.4-3.31 3.03-1.39.63-2.95.77-4.42.44-1.46-.33-2.81-1.15-3.8-2.31-1.07-1.25-1.63-2.88-1.57-4.52.05-1.52.61-3 1.6-4.16.99-1.17 2.37-1.92 3.88-2.13v3.9c-.64.1-1.25.38-1.74.81-.53.47-.89 1.1-.99 1.8-.13.88.1 1.77.62 2.47.53.68 1.32 1.11 2.17 1.19.86.07 1.73-.18 2.42-.71.74-.58 1.17-1.48 1.17-2.42l-.02-12.72c1.33-.02 2.66-.02 3.99-.02z"/>
+                  </svg>
+                </a>
+                <a 
+                  href="https://whatsapp.com/channel/0029VahkOQpJkK7DELtEsS3J" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="h-8 w-8 rounded bg-emerald-950/80 flex items-center justify-center hover:bg-[#25D366] hover:text-white transition-all border border-emerald-700/60 text-emerald-400"
+                  title="Canal WhatsApp Officiel Alerte Bénin"
+                >
+                  <svg className="h-4 w-4 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12.011 0C5.38 0 0 5.379 0 12.01c0 2.116.552 4.182 1.602 6.002L.06 23.94l6.096-1.599A11.96 11.96 0 0012.011 24c6.63 0 12.01-5.379 12.01-12.01 0-6.631-5.38-12.01-12.01-12.01zm6.59 17.022c-.272.766-1.353 1.4-1.88 1.458-.49.053-1.127.108-3.626-.889-2.982-1.192-4.9-4.22-5.05-4.417-.15-.197-1.21-1.61-1.21-3.072 0-1.463.766-2.181 1.038-2.48.272-.3.597-.375.795-.375.197 0 .396.002.57.009.184.007.433-.07.677.516.244.586.834 2.036.907 2.183.073.147.122.322.024.516-.098.194-.147.316-.29.492-.147.176-.312.393-.445.528-.147.147-.301.308-.13.602.172.294.762 1.258 1.636 2.038 1.124.999 2.072 1.31 2.366 1.458.294.147.466.122.639-.074.172-.196.737-.858.932-1.152.196-.294.393-.245.662-.147.27.098 1.714.808 2.008.956.294.147.49.221.563.344.073.123.073.712-.199 1.478z"/>
+                  </svg>
+                </a>
+              </div>
+
+              {/* Quick WhatsApp Banner Button */}
               <a 
-                href="https://www.facebook.com/people/Alerte-B%C3%A9nin/100084176231018/" 
+                href="https://whatsapp.com/channel/0029VahkOQpJkK7DELtEsS3J" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="h-8 w-8 rounded bg-gray-800 flex items-center justify-center hover:bg-[#138A0A] hover:text-white transition-colors border border-gray-700"
-                title="Suivez-nous sur Facebook"
+                className="inline-flex items-center space-x-2 px-3 py-1.5 bg-[#25D366] hover:bg-[#128C7E] text-white text-[11px] font-bold rounded-lg transition-all shadow-sm border border-emerald-400/30"
               >
-                <Facebook className="h-4 w-4" />
-              </a>
-              <a 
-                href="https://www.tiktok.com/@Alerte%20B%C3%A9nin" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="h-8 w-8 rounded bg-gray-800 flex items-center justify-center hover:bg-[#000000] hover:text-white transition-colors border border-gray-700 text-gray-300"
-                title="Suivez-nous sur TikTok"
-              >
-                <svg className="h-4 w-4 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.02 1.59 4.23.95 1.15 2.27 1.94 3.71 2.23v3.91c-1.3-.12-2.58-.57-3.66-1.31-.9-.63-1.63-1.48-2.12-2.47v7.54c0 1.58-.33 3.16-1.14 4.51-.78 1.34-1.93 2.4-3.31 3.03-1.39.63-2.95.77-4.42.44-1.46-.33-2.81-1.15-3.8-2.31-1.07-1.25-1.63-2.88-1.57-4.52.05-1.52.61-3 1.6-4.16.99-1.17 2.37-1.92 3.88-2.13v3.9c-.64.1-1.25.38-1.74.81-.53.47-.89 1.1-.99 1.8-.13.88.1 1.77.62 2.47.53.68 1.32 1.11 2.17 1.19.86.07 1.73-.18 2.42-.71.74-.58 1.17-1.48 1.17-2.42l-.02-12.72c1.33-.02 2.66-.02 3.99-.02z"/>
+                <svg className="h-3.5 w-3.5 fill-current shrink-0" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12.011 0C5.38 0 0 5.379 0 12.01c0 2.116.552 4.182 1.602 6.002L.06 23.94l6.096-1.599A11.96 11.96 0 0012.011 24c6.63 0 12.01-5.379 12.01-12.01 0-6.631-5.38-12.01-12.01-12.01zm6.59 17.022c-.272.766-1.353 1.4-1.88 1.458-.49.053-1.127.108-3.626-.889-2.982-1.192-4.9-4.22-5.05-4.417-.15-.197-1.21-1.61-1.21-3.072 0-1.463.766-2.181 1.038-2.48.272-.3.597-.375.795-.375.197 0 .396.002.57.009.184.007.433-.07.677.516.244.586.834 2.036.907 2.183.073.147.122.322.024.516-.098.194-.147.316-.29.492-.147.176-.312.393-.445.528-.147.147-.301.308-.13.602.172.294.762 1.258 1.636 2.038 1.124.999 2.072 1.31 2.366 1.458.294.147.466.122.639-.074.172-.196.737-.858.932-1.152.196-.294.393-.245.662-.147.27.098 1.714.808 2.008.956.294.147.49.221.563.344.073.123.073.712-.199 1.478z"/>
                 </svg>
+                <span>Rejoindre le Canal WhatsApp</span>
               </a>
             </div>
           </div>

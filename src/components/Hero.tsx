@@ -54,11 +54,11 @@ export default function Hero({ setActiveTab }: HeroProps) {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.3 }}
-              className="flex flex-col sm:flex-row gap-3 pt-2 font-sans"
+              className="flex flex-col sm:flex-row flex-wrap gap-3 pt-2 font-sans"
             >
               <button
                 onClick={() => setActiveTab("news")}
-                className="flex items-center justify-center space-x-2 px-6 py-3 bg-[#138A0A] hover:bg-[#0f6f08] text-white text-xs font-bold uppercase tracking-wider rounded transition-all duration-200"
+                className="flex items-center justify-center space-x-2 px-6 py-3 bg-[#138A0A] hover:bg-[#0f6f08] text-white text-xs font-bold uppercase tracking-wider rounded transition-all duration-200 shadow-xs"
                 id="hero-view-news-btn"
               >
                 <Newspaper className="h-4 w-4" />
@@ -74,6 +74,19 @@ export default function Hero({ setActiveTab }: HeroProps) {
                 <Briefcase className="h-4 w-4 text-[#F5B400]" />
                 <span>Voir les opportunités</span>
               </button>
+
+              <a
+                href="https://whatsapp.com/channel/0029VahkOQpJkK7DELtEsS3J"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center space-x-2 px-5 py-3 bg-[#25D366] hover:bg-[#128C7E] text-white text-xs font-bold uppercase tracking-wider rounded transition-all duration-200 shadow-xs"
+                id="hero-whatsapp-btn"
+              >
+                <svg className="h-4 w-4 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12.011 0C5.38 0 0 5.379 0 12.01c0 2.116.552 4.182 1.602 6.002L.06 23.94l6.096-1.599A11.96 11.96 0 0012.011 24c6.63 0 12.01-5.379 12.01-12.01 0-6.631-5.38-12.01-12.01-12.01zm6.59 17.022c-.272.766-1.353 1.4-1.88 1.458-.49.053-1.127.108-3.626-.889-2.982-1.192-4.9-4.22-5.05-4.417-.15-.197-1.21-1.61-1.21-3.072 0-1.463.766-2.181 1.038-2.48.272-.3.597-.375.795-.375.197 0 .396.002.57.009.184.007.433-.07.677.516.244.586.834 2.036.907 2.183.073.147.122.322.024.516-.098.194-.147.316-.29.492-.147.176-.312.393-.445.528-.147.147-.301.308-.13.602.172.294.762 1.258 1.636 2.038 1.124.999 2.072 1.31 2.366 1.458.294.147.466.122.639-.074.172-.196.737-.858.932-1.152.196-.294.393-.245.662-.147.27.098 1.714.808 2.008.956.294.147.49.221.563.344.073.123.073.712-.199 1.478z"/>
+                </svg>
+                <span>Canal WhatsApp</span>
+              </a>
             </motion.div>
 
             {/* Stat Counters Row */}
